@@ -1,0 +1,133 @@
+[build-system]
+requires = [
+    "build",
+    "setuptools >= 75.3",
+    "setuptools_scm[toml]",
+    "wheel",
+    "mypy>=1.11",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "proto-chango"
+dynamic = ['version']
+description = "Test project for learning protocol buffers"
+urls = { "homepage" = "https://protobuf.dev/getting-started/pythontutorial/" }
+authors = [{ "name" = "Brant Watson", "email" = "oldspiceap@gmail.com" }]
+license = { file = "LICENSE" }
+readme = "README.md"
+classifiers = [
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+requires-python = ">=3.11"
+dependencies = ["protobuf>=5.29.2"]
+
+[project.optional-dependencies]
+dev = ["mypy>=1.13", "pyright==1.1.389"]
+lint = ["ruff~=0.8.4"]
+build = ["build", "setuptools_scm[toml]", "setuptools>=75.3", "wheel"]
+
+[tool.setuptools.package-data]
+"proto_chango" = ["py.typed"]
+
+[tool.setuptools_scm]
+root = "."
+write_to = "src/proto_chango/_version.py"
+version_scheme = "release-branch-semver"
+
+[tool.vermin]
+setuptools_scm = true
+
+[tool.pyright]
+include = ["src"]
+exclude = ["**/egg-info", "**/__pycache__", "src/_version.py", "**/*_pb2.py"]
+stubPath = "src/proto_chango"
+reportMissingImports = true
+strict = ["src/proto_chango/models.py"]
+
+# TIP: When changing mypy config options, test them after removing .mypy_cache
+[tool.mypy]
+check_untyped_defs = true
+show_traceback = true
+disallow_untyped_decorators = true
+disallow_untyped_defs = true
+warn_return_any = true
+show_error_codes = true
+warn_unused_ignores = true
+namespace_packages = true
+warn_redundant_casts = true
+warn_no_return = true
+warn_unreachable = true
+pretty = true
+show_error_context = true
+# Mypy ignores hidden directories but has to scan __pycache__ for .pyc and pyi files so it cannot honor gitignore.
+exclude = [
+    '''^(?:.*\/)+[tT]ests?''',
+    '.+?_pb2.py$',
+    'conftest.py',
+    'venv/',
+    '.venv/',
+    'build/',
+    '.pyenv/',
+    'pyenv/',
+    '.myenv/',
+    '.env_python3.9/',
+    '.env_python3.10/',
+    '.env_python3.11/',
+    '.env_python3.12/',
+    '.env_python3.13/',
+    '.env_python3.14/',
+    '.env_python3.15/',
+]
+
+[[tool.mypy.overrides]]
+module = "proto_chango.version"
+warn_unused_ignores = false
+
+[tool.ruff]
+line-length = 120
+exclude = ["*.pyi", "*.pyc", "*.pyd", "_version.py"]
+
+[tool.ruff.lint]
+select = [
+    "E",  # Pycodestyle Errors
+    "W",  # Pycodestyle Warnings
+    "F",  # PyFlakes rules
+    "B",  # Bugbear rules (likely bugs & design problems in your code)
+    "N",  # Pep8 naming rules
+    "D",  # Pydocstyle (rules for docstrings)
+    "UP", # Prefer upgraded Python syntax
+]
+ignore = [
+    "D105", # Documenting every magic method is tedious and often redundant/self-explanatory
+    "D203", # D203 & D211 are incompatible; have to choose one or the other
+    "D212", # D212 and D213 are incompatible; D212 makes visual alignment weird
+    "D104", # Don't require a docstring for every module __init__ file
+    "D107", # Don't require a docstring for every __init__ method
+    "D100", # Don't make all modules include a docstring
+]
+
+# Allow unused variables named "_".
+dummy-variable-rgx = "^_$"
+
+# Select the classes of fixable errors
+fixable = ["E", "F", "W", "N", "D", "UP"]
+
+unfixable = [
+    "B", # Avoid trying to fix flake8-bugbear (`B`) violations.
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*" = [
+    "D101", # Relax some docstrings rules
+    "D102",
+    "E501", # Long lines are par for the couse in Unitests
+    "N805", # Allow names other than "self" for instances methods
+    "B018", # Allow useless expressions (often used to assert calls raise exceptions)
+]
+"src/proto_chango/*_pb2.py" = ["E501"] # Generated code is often long

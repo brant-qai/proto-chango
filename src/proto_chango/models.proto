@@ -1,0 +1,34 @@
+syntax = "proto2";
+
+package proto_chango;
+
+/**
+ * Node is a type with a repeating self reference which is
+ * used to test recursive types
+ */
+message Node {
+  required string id=1;
+  repeated Node nodes=2;
+}
+
+
+/**
+ * Represent a datatime object as a string to preserve timezone info
+ * when possible
+ */
+message DateTime {
+    required string value=1;
+}
+
+
+/**
+ * Object is a type with a reference to another custom type (node) as well as two datetime fields, one
+ * which is a string, the other which refers to a DateTime protobuf type. This demonstrates different
+ * ways of handling datetime objects.
+ */
+message Object {
+    required Node node=3;
+    required string name=4;
+    required string created_at=5;
+    required DateTime updated_at=6;
+}
